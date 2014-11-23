@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %}NoVAFur Crossposter{% endblock %}
+{% import 'navbar-admin.html' as navbar %}
+{% block body %}
+  <div class="container">
+    {{ navbar.top('NoVAFur Crossposter', user=session.user) }}    
+    <div class="well opaque">
+      
+      <!--<img id="login-logo" src="{{ url_for('static', filename='img/logo.png') }}">-->
+
+      <h2 style="text-align: center">NoVAFurs</h2><br>
+
+      {% with errors = get_flashed_messages(category_filter=["error"]) -%}
+        {% if errors %}
+          {%- for msg in errors %}
+            <div class="alert alert-danger text-center">
+              <strong>Error: </strong> {{ msg }}
+            </div>
+          {% endfor -%}
+        {% endif %}
+      {%- endwith %}
+      
+      {% with errors = get_flashed_messages(category_filter=["success"]) -%}
+        {% if errors %}
+          {%- for msg in errors %}
+            <div class="alert alert-success text-center">
+              {{ msg }}
+            </div>
+          {% endfor -%}
+        {% endif %}
+      {%- endwith %}
+      
+      
+    </div>
+  </div>
+{% endblock %}
