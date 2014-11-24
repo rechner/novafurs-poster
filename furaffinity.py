@@ -66,13 +66,39 @@ class FurAffinity:
             raise TypeError("Expected form input value not found")
         return tag.get('value')
 
+    @staticmethod
+    def convert_markdown(text):
+        """Changes markdown to FA's BB code."""
+
+        # Links and image stripping needs to happen before escaping
+
+
+        # Escape character literals
+        text = re.sub(r'\\\*', '%%STRASTERISK%%', text)
+
+        # **Strong tag**
+        text = re.sub(r'\*\*(?=\S)(.+?[*_]*)(?<=\S)\*\*',
+               r'[b]\1[/b]', text)
+
+        # *emphasis*
+        text = re.sub(r'\*(?=\S)(.+?)(?<=\S)\*',
+               r'[i]\1[/i]', text)
+
+
+
+        # Unescape:
+        text = re.sub(r'%%STRASTERISK%%', '*', text)
+        return text
+
 
 if __name__ == '__main__':
-    api = FurAffinity('cookies.txt')
+    #api = FurAffinity('cookies.txt')
     doc = """This is a test... This is only a [b]test[/b].
 
     Testing testing 1,2,3.  That is all.
 
     Woof.
     """
-    print api.post_journal("Hello world!", doc)
+    #print api.post_journal("Hello world!", doc)
+
+    print FurAffinity.convert_markdown("*testing* 123.  This is a test.  This is only a **test**.  That is all*.")

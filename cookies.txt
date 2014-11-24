@@ -1,0 +1,7 @@
+# Netscape HTTP Cookie File
+# NOTE: The above comment is VERY IMPORTANT. Make sure your export tool includes it as the first line
+# or else the cookie file won't load.
+
+.furaffinity.net	TRUE	/	FALSE	2147483647	__cfduid	d3d2afa919222024daff1a15342eb15931415665468259
+.furaffinity.net	TRUE	/	FALSE	2147483647	b	648c7464-3219-478b-8ae3-935ea2cdcb57
+.furaffinity.net	TRUE	/	FALSE	2147483647	a	7b3bf506-8f82-4d72-9bcf-384581a4af7d

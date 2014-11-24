@@ -9,6 +9,7 @@ from functools import wraps
 import bcrypt
 import sqlite3
 from flask import Flask, render_template, g, session, request, redirect, url_for, flash
+from flask import get_flashed_messages
 #import tweetpony
 
 # Fields will look something like this:
@@ -70,9 +71,59 @@ def init_db():
 def index():
     return render_template('index.html')
 
-@app.route('/post')
+@app.route('/post', methods=['GET', 'POST'])
 def new_post():
-    return render_template('new_post.html')
+    if request.method == 'POST':
+        subject = request.form.get('subject', '')
+        summary = request.form.get('summary', '')
+        message = request.form.get('message', '') # Raw markdown
+        markup = request.form.get('markup', '') # The rendered output
+        post_to = request.form.getlist('post-to')
+
+        # Validate the form
+        if subject == '':
+            flash("The 'subject' field is required", "error")
+        if summary == '':
+            summary = subject
+        if message == '':
+            flash("Empty bodies are not allowed. Enter some content!", "error")
+        if markup == '':
+            flash("There was a problem fetching the message markup", "error")
+        if len(post_to) == 0:
+            flash("Please select at least one platform to post to", "error")
+
+        if get_flashed_messages(category_filter='error'):
+            return render_template('new_post.html', form=request.form)
+
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO posts(owner, subject, summary, message,
+                   markup, timestamp) VALUES (?,?,?,?,?, strftime('%Y-%m-%dT%H:%M:%SZ'));""",
+                   (session['user']['id'], subject, summary, message,
+                    markup))
+        if 'furaffinity' in post_to:
+            cursor.execute("UPDATE posts SET link_furaffinity = 'pending' WHERE id = ?", (id,))
+        if 'weasyl' in post_to:
+            cursor.execute("UPDATE posts SET link_weasyl = 'pending' WHERE id = ?", (id,))
+        if 'twitter' in post_to:
+            cursor.execute("UPDATE posts SET link_twitter = 'pending' WHERE id = ?", (id,))
+        db.commit()
+
+        flash("Successfully saved post {0}.".format(cursor.lastrowid), "success")
+        return redirect(url_for('review', id=cursor.lastrowid))
+
+    return render_template('new_post.html', form=request.form)
+
+@app.route('/review/<int:id>', methods=['GET', 'POST'])
+@login_required
+def review(id):
+    post = query_db('SELECT * FROM posts WHERE id = ?', (id,), one=True)
+    if post is None:
+        flash("Invalid post ID", "error")
+    else:
+        post = dict(post)
+        post['fa_markup'] = post['message']
+    return render_template('review.html', post=post)
 
 @app.route('/logout')
 def logout():

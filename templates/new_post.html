@@ -1,3 +1,4 @@
+<!-- vim: ts=2:softtabstop=2:shiftwidth=2 -->
 {% extends "layout.html" %}
 {% block title %}NoVAFur Crossposter{% endblock %}
 {% import 'navbar-admin.html' as navbar %}
@@ -15,7 +16,7 @@
           {% endfor -%}
         {% endif %}
       {%- endwith %}
-      
+
       {% with errors = get_flashed_messages(category_filter=["success"]) -%}
         {% if errors %}
           {%- for msg in errors %}
@@ -25,12 +26,60 @@
           {% endfor -%}
         {% endif %}
       {%- endwith %}
-      
-      <div id="editor">
-        <textarea v-model="input"></textarea>
-        <div v-html="input | marked"></div>
-      </div>
-      
+
+      <form method="POST" role="form">
+        <div class="form-group">
+            <label for="subject" class="sr-only">Subject</label>
+          <input type="text" class="form-control" id="subject"
+                 placeholder="Subject" name="subject"
+                 value="{{ form.subject }}">
+        </div>
+
+        <div class="form-group">
+            <label for="summary" class="sr-only">Summary</label>
+          <input type="text" class="form-control" id="summary"
+                  name="summary" placeholder="Summary">
+          <p class="help-block">A short (~80 character) summary of
+            the post. If summary is left blank, the subject
+            is used instead when posting to Facebook and Twitter.
+          </p>
+        </div>
+        
+        <div class="form-group">
+          <div id="editor">
+            <textarea v-model="input" name="message" id="message"></textarea>
+            <div v-html="input | marked"></div>
+            <input type="hidden" name="markup" v-attr="value: input | marked">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="post-to">Post to</label>
+          <div id="post-to" class="checkbox-group">
+            <label class="checkbox-inline">
+              <input type="checkbox" id="fa-checkbox" name="post-to" value="furaffinity" checked> Furaffinity
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="wl-checkbox" name="post-to" value="weasyl" checked> Weasyl
+            </label>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="tw-checkbox" name="post-to" value="twitter" checked> Twitter
+            </label>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-md-offset-4">
+          <button type="submit" class="btn btn-primary btn-block">
+            Review Post <span class="glyphicon glyphicon-arrow-right"></span>
+          </button>
+        </div>
+
+        <!-- FIXME: without this here, the button is hanging off the screen -->
+        <div class="form-group">
+          &nbsp;
+        </div>
+      </form>
+
     </div>
   </div>
   

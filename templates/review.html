@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+{% block title %}NoVAFur Crossposter{% endblock %}
+{% import 'navbar-admin.html' as navbar %}
+{% block body %}
+  <div class="container">
+    {{ navbar.top('NoVAFur Crossposter', user=session.user) }}    
+    <div class="well opaque">
+      
+      <!--<img id="login-logo" src="{{ url_for('static', filename='img/logo.png') }}">-->
+
+      {% with errors = get_flashed_messages(category_filter=["error"]) -%}
+        {% if errors %}
+          {%- for msg in errors %}
+            <div class="alert alert-danger text-center">
+              <strong>Error: </strong> {{ msg }}
+            </div>
+          {% endfor -%}
+        {% endif %}
+      {%- endwith %}
+      
+      {% with errors = get_flashed_messages(category_filter=["success"]) -%}
+        {% if errors %}
+          {%- for msg in errors %}
+            <div class="alert alert-success text-center">
+              {{ msg }}
+            </div>
+          {% endfor -%}
+        {% endif %}
+      {%- endwith %}
+
+      {%- if post -%}
+        {%- if post.link_furaffinity == 'pending' -%}
+          {%- set fa_check = 'checked' -%}
+        {%- endif -%}
+        {%- if post.link_weasyl == 'pending' -%}
+          {%- set wl_check = 'checked' -%}
+        {%- endif -%}
+        {%- if post.twitter  == 'pending' -%}
+          {%- set tw_check = 'checked' -%}
+        {%- endif -%}
+        <form class="form-horizontal" role="form" method="POST">
+          <div class="form-group">
+            <div class="col-md-2">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="post" value="furaffinity" {{ fa_check }}>
+                  Post to Furaffinity
+                </label>
+              </div>
+            </div>
+            <div class="preview col-md-10">
+              <pre>{{ post.fa_markup }}</pre>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-2">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="post" value="weasyl" {{ wl_check }}>
+                  Post to Weasyl
+                </label>
+              </div>
+            </div>
+            <div class="preview col-md-10">
+              {{ post.markup|safe }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-2">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="post" value="twitter" {{ tw_check }}>
+                  Post to twitter
+                </label>
+              </div>
+            </div>
+            <div class="col-md-10">
+              <input type="text" value="{{ post.summary }}… %fa_journal_url%"
+               name="twitter-post" id="twitter-post" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-2 col-md-offset-3">
+              <a href="#" class="btn btn-danger btn-block">
+                <span class="glyphicon glyphicon-trash"></span> Delete
+              </a>
+            </div>
+            <div class="col-md-2">
+              <a href="#" class="btn btn-default btn-block">
+                <span class="glyphicon glyphicon-edit"></span> Edit Post
+              </a>
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-block btn-success">
+                <span class="glyphicon glyphicon-ok-sign"></span> Post to selected sites
+              </button>
+            </div>
+          </div>
+        </form>
+
+      {% endif %}
+      
+    </div>
+  </div>
+{% endblock %}
